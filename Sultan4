@@ -2,17 +2,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-// Define an interface for observers
+
 interface Observer {
     void update(Document document);
 }
 
-// Define an interface for documents
+
 interface Document {
     void create();
 }
 
-// Implementation of the Document interface for Contracts
+
 class Contract implements Document {
     @Override
     public void create() {
@@ -20,7 +20,7 @@ class Contract implements Document {
     }
 }
 
-// Implementation of the Document interface for Presentations
+
 class Presentation implements Document {
     @Override
     public void create() {
@@ -28,7 +28,7 @@ class Presentation implements Document {
     }
 }
 
-// Implementation of the Document interface for Reports
+
 class Report implements Document {
     @Override
     public void create() {
@@ -36,7 +36,7 @@ class Report implements Document {
     }
 }
 
-// Implementation of the Document Factory
+
 class DocumentFactory {
     Document createDocument(String documentType) {
         switch (documentType) {
@@ -52,7 +52,7 @@ class DocumentFactory {
     }
 }
 
-// Implementation of the subject (managing observers)
+
 class DocumentManager {
     private final List<Observer> observers = new ArrayList<>();
 
@@ -72,7 +72,7 @@ class DocumentManager {
     }
 }
 
-// Implementation of concrete observers
+
 class User implements Observer {
     final String name;
 
