@@ -1,0 +1,143 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Define an interface for observers
+interface Observer {
+    void update(Document document);
+}
+
+// Define an interface for documents
+interface Document {
+    void create();
+}
+
+// Implementation of the Document interface for Contracts
+class Contract implements Document {
+    @Override
+    public void create() {
+        System.out.println("Contract created");
+    }
+}
+
+// Implementation of the Document interface for Presentations
+class Presentation implements Document {
+    @Override
+    public void create() {
+        System.out.println("Presentation created");
+    }
+}
+
+// Implementation of the Document interface for Reports
+class Report implements Document {
+    @Override
+    public void create() {
+        System.out.println("Report created");
+    }
+}
+
+// Implementation of the Document Factory
+class DocumentFactory {
+    Document createDocument(String documentType) {
+        switch (documentType) {
+            case "contract":
+                return new Contract();
+            case "presentation":
+                return new Presentation();
+            case "report":
+                return new Report();
+            default:
+                throw new IllegalArgumentException("Invalid document type");
+        }
+    }
+}
+
+// Implementation of the subject (managing observers)
+class DocumentManager {
+    private final List<Observer> observers = new ArrayList<>();
+
+    void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    void createDocument(String documentType) {
+        Document document = new DocumentFactory().createDocument(documentType);
+        for (Observer observer : observers) {
+            observer.update(document);
+        }
+    }
+}
+
+// Implementation of concrete observers
+class User implements Observer {
+    final String name;
+
+    User(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void update(Document document) {
+        System.out.println(name + " received a notification: " + document.getClass().getSimpleName());
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        DocumentManager manager = new DocumentManager();
+        List<User> users = new ArrayList<>();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Menu:");
+            System.out.println("1. Subscribe a user");
+            System.out.println("2. Unsubscribe a user");
+            System.out.println("3. Create a document");
+            System.out.println("4. Exit");
+            System.out.print("Choose an action: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Clear the buffer
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the user's name: ");
+                    String userName = scanner.nextLine();
+                    User user = new User(userName);
+                    manager.addObserver(user);
+                    users.add(user);
+                    System.out.println(userName + " subscribed.");
+                    break;
+                case 2:
+                    System.out.print("Enter the user's name to unsubscribe: ");
+                    String userNameToUnsubscribe = scanner.nextLine();
+                    User userToUnsubscribe = users.stream()
+                            .filter(u -> u.name.equals(userNameToUnsubscribe))
+                            .findFirst()
+                            .orElse(null);
+                    if (userToUnsubscribe != null) {
+                        manager.removeObserver(userToUnsubscribe);
+                        users.remove(userToUnsubscribe);
+                        System.out.println(userNameToUnsubscribe + " unsubscribed.");
+                    } else {
+                        System.out.println("User with that name not found.");
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter the document type (contract, presentation, report): ");
+                    String documentType = scanner.nextLine();
+                    manager.createDocument(documentType);
+                    break;
+                case 4:
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
